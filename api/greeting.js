@@ -1,33 +1,31 @@
-import admin from 'firebase-admin';
-import path from 'path';
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
 
-const serviceAccount = require(path.resolve(process.cwd(), 'mendchilgee-a5529-firebase-adminsdk-fbsvc-2dad8f01c7.json'));
+let greetings = [];
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
+export default function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-const db = admin.firestore();
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    try {
-      const newGreeting = { ...req.body, createdAt: Date.now() };
-      const docRef = await db.collection('greetings').add(newGreeting);
-      res.status(200).json({ id: docRef.id, ...newGreeting });
-    } catch (err) {
-      res.status(500).json({ error: 'Firestore-д хадгалах үед алдаа гарлаа', details: err.message });
+  if (req.method === 'GET') {
+    res.status(200).json(greetings);
+  } else if (req.method === 'POST') {
+    if (!req.body || !req.body.message) {
+      return res.status(400).json({ error: 'message талбарыг заавал илгээнэ үү' });
     }
-  } else if (req.method === 'GET') {
-    try {
-      const snapshot = await db.collection('greetings').get();
-      const greetings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      res.status(200).json(greetings);
-    } catch (err) {
-      res.status(500).json({ error: 'Firestore-оос унших үед алдаа гарлаа', details: err.message });
-    }
+    const newGreeting = { ...req.body, id: Date.now().toString() };
+    greetings.push(newGreeting);
+    res.status(200).json(newGreeting);
   } else {
     res.status(405).json({ error: 'Method not allowed' });
   }
