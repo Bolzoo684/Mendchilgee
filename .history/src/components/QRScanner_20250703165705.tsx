@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera, Upload, AlertCircle, Sparkles, Heart, QrCode, X } from 'lucide-react';
 import QrScanner from 'qr-scanner';
-// QrScanner worker path тохируулах
-QrScanner.WORKER_PATH = '/qr-scanner-worker.min.js';
 import { GreetingCard, QRData } from '../types';
 import { decryptData } from '../utils/encryption';
 import { getGreetingCard, updateCardAccess } from '../utils/storage';

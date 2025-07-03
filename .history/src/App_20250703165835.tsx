@@ -71,7 +71,7 @@ function App() {
         return <GreetingCardForm onCardCreated={handleCardCreated} />;
       
       case 'scan':
-        return <QRScannerComponent onScanResult={handleScanResult} />;
+        return <QRScanner onScanResult={handleScanResult} />;
       
       case 'view':
         if (currentCard && qrCodeUrl) {
